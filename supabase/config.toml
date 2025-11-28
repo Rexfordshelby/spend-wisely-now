@@ -1,0 +1,4 @@
+project_id = "zkhkizaodunbvgdttcpi"
+
+[functions.spend-advisor]
+verify_jwt = false
