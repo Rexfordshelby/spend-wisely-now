@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          category: string
+          created_at: string | null
+          criteria: Json
+          description: string | null
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          criteria: Json
+          description?: string | null
+          icon: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          criteria?: Json
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      bills: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string | null
+          due_date: string
+          id: string
+          name: string
+          notes: string | null
+          recurrence_type: string | null
+          recurring: boolean | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string | null
+          due_date: string
+          id?: string
+          name: string
+          notes?: string | null
+          recurrence_type?: string | null
+          recurring?: boolean | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string | null
+          due_date?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          recurrence_type?: string | null
+          recurring?: boolean | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bills_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       budgets: {
         Row: {
           created_at: string
@@ -87,6 +167,38 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string | null
@@ -123,6 +235,118 @@ export type Database = {
             foreignKeyName: "goals_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_goal_members: {
+        Row: {
+          contribution: number | null
+          goal_id: string
+          id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          contribution?: number | null
+          goal_id: string
+          id?: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          contribution?: number | null
+          goal_id?: string
+          id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_goal_members_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "group_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_goal_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_goals: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          current_amount: number | null
+          deadline: string | null
+          id: string
+          name: string
+          status: string | null
+          target_amount: number
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          current_amount?: number | null
+          deadline?: string | null
+          id?: string
+          name: string
+          status?: string | null
+          target_amount: number
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          current_amount?: number | null
+          deadline?: string | null
+          id?: string
+          name?: string
+          status?: string | null
+          target_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_goals_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leaderboard_scores: {
+        Row: {
+          id: string
+          rank: number | null
+          total_score: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          rank?: number | null
+          total_score?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          rank?: number | null
+          total_score?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -233,6 +457,44 @@ export type Database = {
         }
         Relationships: []
       }
+      social_posts: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          likes_count: number | null
+          metadata: Json | null
+          post_type: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          metadata?: Json | null
+          post_type: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          metadata?: Json | null
+          post_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spending_limits: {
         Row: {
           category: string
@@ -268,6 +530,85 @@ export type Database = {
           },
         ]
       }
+      streaks: {
+        Row: {
+          created_at: string | null
+          current_streak: number | null
+          id: string
+          last_activity_date: string | null
+          longest_streak: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "streaks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          billing_cycle: string
+          category: string | null
+          created_at: string | null
+          id: string
+          name: string
+          next_billing_date: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          billing_cycle: string
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          next_billing_date: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          billing_cycle?: string
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          next_billing_date?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number
@@ -275,6 +616,8 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          is_recurring: boolean | null
+          recurrence_pattern: string | null
           type: string
           wallet_id: string
         }
@@ -284,6 +627,8 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
           type: string
           wallet_id: string
         }
@@ -293,6 +638,8 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
           type?: string
           wallet_id?: string
         }
@@ -302,6 +649,42 @@ export type Database = {
             columns: ["wallet_id"]
             isOneToOne: false
             referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

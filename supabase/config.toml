@@ -2,3 +2,12 @@ project_id = "zkhkizaodunbvgdttcpi"
 
 [functions.spend-advisor]
 verify_jwt = false
+
+[functions.chat-assistant]
+verify_jwt = false
+
+[functions.sync-mock-bank]
+verify_jwt = false
+
+[functions.calculate-achievements]
+verify_jwt = false
