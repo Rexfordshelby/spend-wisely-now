@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, TrendingUp, PieChart as PieChartIcon } from "lucide-react";
+import { ArrowLeft, TrendingUp, PieChart as PieChartIcon, Home, BarChart3, Users, MessageSquare, Trophy } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
+import BottomNavLink from "@/components/BottomNavLink";
 
 export default function Analytics() {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ export default function Analytics() {
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--destructive))', 'hsl(var(--muted))'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-28">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -219,6 +220,17 @@ export default function Analytics() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border/50 z-40">
+        <div className="flex items-center justify-around p-3">
+          <BottomNavLink to="/" icon={Home} label="Home" />
+          <BottomNavLink to="/analytics" icon={BarChart3} label="Analytics" active />
+          <BottomNavLink to="/leaderboard" icon={Trophy} label="Leaderboard" />
+          <BottomNavLink to="/social" icon={Users} label="Social" />
+          <BottomNavLink to="/chat" icon={MessageSquare} label="Chat" />
+        </div>
       </div>
     </div>
   );

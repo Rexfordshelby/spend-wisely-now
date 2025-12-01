@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Bell, CreditCard, Plus, Calendar, DollarSign } from "lucide-react";
+import { ArrowLeft, Bell, CreditCard, Plus, Calendar, DollarSign, Home, BarChart3, Users, MessageSquare, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import BottomNavLink from "@/components/BottomNavLink";
 import { toast } from "sonner";
 
 export default function Bills() {
@@ -77,7 +78,7 @@ export default function Bills() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-28">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -233,6 +234,17 @@ export default function Bills() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border/50 z-40">
+        <div className="flex items-center justify-around p-3">
+          <BottomNavLink to="/" icon={Home} label="Home" />
+          <BottomNavLink to="/analytics" icon={BarChart3} label="Analytics" />
+          <BottomNavLink to="/leaderboard" icon={Trophy} label="Leaderboard" />
+          <BottomNavLink to="/social" icon={Users} label="Social" />
+          <BottomNavLink to="/chat" icon={MessageSquare} label="Chat" />
+        </div>
       </div>
     </div>
   );

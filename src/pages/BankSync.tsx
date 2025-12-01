@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, RefreshCcw, Wallet, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, RefreshCcw, Wallet, CheckCircle2, Home, BarChart3, Users, MessageSquare, Trophy } from "lucide-react";
+import BottomNavLink from "@/components/BottomNavLink";
 import { toast } from "sonner";
 
 export default function BankSync() {
@@ -39,7 +40,7 @@ export default function BankSync() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-28">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
