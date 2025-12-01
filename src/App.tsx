@@ -15,6 +15,11 @@ import Social from "./pages/Social";
 import Bills from "./pages/Bills";
 import Achievements from "./pages/Achievements";
 import BankSync from "./pages/BankSync";
+import Wallets from "./pages/Wallets";
+import SendMoney from "./pages/SendMoney";
+import ReceiveMoney from "./pages/ReceiveMoney";
+import ScanPay from "./pages/ScanPay";
+import Transfers from "./pages/Transfers";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +41,11 @@ const App = () => (
           <Route path="/bills" element={<Bills />} />
           <Route path="/achievements" element={<Achievements />} />
           <Route path="/bank-sync" element={<BankSync />} />
+          <Route path="/wallets" element={<Wallets />} />
+          <Route path="/send" element={<SendMoney />} />
+          <Route path="/receive" element={<ReceiveMoney />} />
+          <Route path="/scan-pay" element={<ScanPay />} />
+          <Route path="/transfers" element={<Transfers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
