@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings, TrendingUp, Wallet, Target, ArrowRight } from "lucide-react";
+import { Plus, Settings, TrendingUp, Wallet, Target, ArrowRight, Home, BarChart3, Users, MessageSquare, Trophy } from "lucide-react";
 import BudgetRing from "@/components/BudgetRing";
 import SpendInputModal from "@/components/SpendInputModal";
 import TransactionCard from "@/components/TransactionCard";
+import BottomNavLink from "@/components/BottomNavLink";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -169,7 +170,7 @@ const Index = () => {
   const goalProgress = goal ? ((Number(goal.current_amount) / Number(goal.target_amount)) * 100) : 0;
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-28">
       {/* Header */}
       <div className="p-4 flex justify-between items-center">
         <div>
@@ -298,7 +299,7 @@ const Index = () => {
       </div>
 
       {/* Floating Action Button */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50">
         <Button
           size="lg"
           className="h-16 w-16 rounded-full neon-glow shadow-glow-cyan"
@@ -306,6 +307,17 @@ const Index = () => {
         >
           <Plus className="w-8 h-8" />
         </Button>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border/50 z-40">
+        <div className="flex items-center justify-around p-3">
+          <BottomNavLink to="/" icon={Home} label="Home" active />
+          <BottomNavLink to="/analytics" icon={BarChart3} label="Analytics" />
+          <BottomNavLink to="/leaderboard" icon={Trophy} label="Leaderboard" />
+          <BottomNavLink to="/social" icon={Users} label="Social" />
+          <BottomNavLink to="/chat" icon={MessageSquare} label="Chat" />
+        </div>
       </div>
 
       {/* Spend Input Modal */}

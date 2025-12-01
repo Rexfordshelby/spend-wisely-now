@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Save, LogOut, Target, Trash2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft, Save, LogOut, Target, Trash2, MessageSquare, Award, CreditCard, Zap, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 
 const Settings = () => {
@@ -293,6 +294,48 @@ const Settings = () => {
                 Add Goal
               </Button>
             </div>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="glass-card p-6 rounded-2xl shadow-card">
+          <h2 className="text-xl font-bold mb-4">Features</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Card 
+              className="p-4 cursor-pointer hover:bg-accent/10 transition-colors"
+              onClick={() => navigate('/chat')}
+            >
+              <MessageSquare className="w-8 h-8 text-primary mb-2" />
+              <h3 className="font-semibold text-sm">AI Assistant</h3>
+              <p className="text-xs text-muted-foreground">Chat with advisor</p>
+            </Card>
+            
+            <Card 
+              className="p-4 cursor-pointer hover:bg-accent/10 transition-colors"
+              onClick={() => navigate('/achievements')}
+            >
+              <Award className="w-8 h-8 text-accent mb-2" />
+              <h3 className="font-semibold text-sm">Achievements</h3>
+              <p className="text-xs text-muted-foreground">View badges & XP</p>
+            </Card>
+            
+            <Card 
+              className="p-4 cursor-pointer hover:bg-accent/10 transition-colors"
+              onClick={() => navigate('/bills')}
+            >
+              <CreditCard className="w-8 h-8 text-secondary mb-2" />
+              <h3 className="font-semibold text-sm">Bills</h3>
+              <p className="text-xs text-muted-foreground">Manage payments</p>
+            </Card>
+            
+            <Card 
+              className="p-4 cursor-pointer hover:bg-accent/10 transition-colors"
+              onClick={() => navigate('/bank-sync')}
+            >
+              <Zap className="w-8 h-8 text-primary mb-2" />
+              <h3 className="font-semibold text-sm">Bank Sync</h3>
+              <p className="text-xs text-muted-foreground">Demo mode</p>
+            </Card>
           </div>
         </div>
 

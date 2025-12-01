@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, ArrowLeft, Bot, User } from "lucide-react";
+import { Send, ArrowLeft, Bot, User, Home, BarChart3, Users, MessageSquare, Trophy } from "lucide-react";
+import BottomNavLink from "@/components/BottomNavLink";
 import { toast } from "sonner";
 
 export default function Chat() {
@@ -72,7 +73,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-background via-background/95 to-background/90">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-16">
       {/* Header */}
       <div className="flex items-center gap-4 p-4 border-b border-border/50 bg-background/80 backdrop-blur-lg sticky top-0 z-10">
         <Button

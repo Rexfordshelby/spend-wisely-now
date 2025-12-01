@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Award, Zap, Star, Trophy } from "lucide-react";
+import { ArrowLeft, Award, Zap, Star, Trophy, Home, BarChart3, Users, MessageSquare } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import BottomNavLink from "@/components/BottomNavLink";
 
 export default function Achievements() {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ export default function Achievements() {
   const xpProgress = ((profile?.xp || 0) % 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-28">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -155,6 +156,17 @@ export default function Achievements() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border/50 z-40">
+        <div className="flex items-center justify-around p-3">
+          <BottomNavLink to="/" icon={Home} label="Home" />
+          <BottomNavLink to="/analytics" icon={BarChart3} label="Analytics" />
+          <BottomNavLink to="/leaderboard" icon={Trophy} label="Leaderboard" />
+          <BottomNavLink to="/social" icon={Users} label="Social" />
+          <BottomNavLink to="/chat" icon={MessageSquare} label="Chat" />
+        </div>
       </div>
     </div>
   );

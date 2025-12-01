@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Trophy, Medal, Award } from "lucide-react";
+import { ArrowLeft, Trophy, Medal, Award, Home, BarChart3, Users, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import BottomNavLink from "@/components/BottomNavLink";
 
 export default function Leaderboard() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 pb-28">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -121,6 +122,17 @@ export default function Leaderboard() {
               <p className="text-muted-foreground">No rankings available yet</p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-lg border-t border-border/50 z-40">
+        <div className="flex items-center justify-around p-3">
+          <BottomNavLink to="/" icon={Home} label="Home" />
+          <BottomNavLink to="/analytics" icon={BarChart3} label="Analytics" />
+          <BottomNavLink to="/leaderboard" icon={Trophy} label="Leaderboard" active />
+          <BottomNavLink to="/social" icon={Users} label="Social" />
+          <BottomNavLink to="/chat" icon={MessageSquare} label="Chat" />
         </div>
       </div>
     </div>
