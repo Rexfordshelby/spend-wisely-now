@@ -11,3 +11,15 @@ verify_jwt = false
 
 [functions.calculate-achievements]
 verify_jwt = false
+
+[functions.exchange-rates]
+verify_jwt = false
+
+[functions.send-transfer]
+verify_jwt = true
+
+[functions.qr-payment]
+verify_jwt = true
+
+[functions.generate-upi-qr]
+verify_jwt = false

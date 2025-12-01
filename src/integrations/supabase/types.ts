@@ -199,6 +199,30 @@ export type Database = {
           },
         ]
       }
+      exchange_rate_cache: {
+        Row: {
+          base_currency: string
+          fetched_at: string | null
+          id: string
+          rate: number
+          target_currency: string
+        }
+        Insert: {
+          base_currency: string
+          fetched_at?: string | null
+          id?: string
+          rate: number
+          target_currency: string
+        }
+        Update: {
+          base_currency?: string
+          fetched_at?: string | null
+          id?: string
+          rate?: number
+          target_currency?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           created_at: string | null
@@ -320,6 +344,96 @@ export type Database = {
           },
         ]
       }
+      international_transfers: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string | null
+          exchange_rate: number
+          fee: number
+          id: string
+          recipient_details: Json | null
+          recipient_id: string | null
+          sender_id: string
+          sender_wallet_id: string | null
+          source_currency: string
+          status: string | null
+          target_currency: string
+          total_amount: number
+          transfer_type: string
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string | null
+          exchange_rate: number
+          fee?: number
+          id?: string
+          recipient_details?: Json | null
+          recipient_id?: string | null
+          sender_id: string
+          sender_wallet_id?: string | null
+          source_currency: string
+          status?: string | null
+          target_currency: string
+          total_amount: number
+          transfer_type: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string | null
+          exchange_rate?: number
+          fee?: number
+          id?: string
+          recipient_details?: Json | null
+          recipient_id?: string | null
+          sender_id?: string
+          sender_wallet_id?: string | null
+          source_currency?: string
+          status?: string | null
+          target_currency?: string
+          total_amount?: number
+          transfer_type?: string
+        }
+        Relationships: []
+      }
+      kyc_documents: {
+        Row: {
+          country_code: string
+          created_at: string | null
+          document_type: string
+          document_url: string | null
+          id: string
+          id_number: string | null
+          user_id: string
+          verification_status: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          country_code: string
+          created_at?: string | null
+          document_type: string
+          document_url?: string | null
+          id?: string
+          id_number?: string | null
+          user_id: string
+          verification_status?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          country_code?: string
+          created_at?: string | null
+          document_type?: string
+          document_url?: string | null
+          id?: string
+          id_number?: string | null
+          user_id?: string
+          verification_status?: string | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       leaderboard_scores: {
         Row: {
           id: string
@@ -412,6 +526,36 @@ export type Database = {
         }
         Relationships: []
       }
+      multi_currency_wallets: {
+        Row: {
+          balance: number
+          created_at: string | null
+          currency: string
+          id: string
+          is_primary: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string | null
+          currency: string
+          id?: string
+          is_primary?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          is_primary?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -454,6 +598,54 @@ export type Database = {
           spends_advised_count?: number | null
           spends_skipped_count?: number | null
           xp?: number | null
+        }
+        Relationships: []
+      }
+      recipients: {
+        Row: {
+          account_number: string | null
+          bank_name: string | null
+          country_code: string
+          created_at: string | null
+          currency: string
+          iban: string | null
+          id: string
+          is_verified: boolean | null
+          name: string
+          swift_code: string | null
+          upi_id: string | null
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          account_number?: string | null
+          bank_name?: string | null
+          country_code: string
+          created_at?: string | null
+          currency: string
+          iban?: string | null
+          id?: string
+          is_verified?: boolean | null
+          name: string
+          swift_code?: string | null
+          upi_id?: string | null
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          account_number?: string | null
+          bank_name?: string | null
+          country_code?: string
+          created_at?: string | null
+          currency?: string
+          iban?: string | null
+          id?: string
+          is_verified?: boolean | null
+          name?: string
+          swift_code?: string | null
+          upi_id?: string | null
+          user_id?: string
+          wallet_address?: string | null
         }
         Relationships: []
       }
