@@ -23,3 +23,6 @@ verify_jwt = true
 
 [functions.generate-upi-qr]
 verify_jwt = false
+
+[functions.process-demo-payment]
+verify_jwt = true
