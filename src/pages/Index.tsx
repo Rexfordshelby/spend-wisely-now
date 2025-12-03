@@ -7,6 +7,7 @@ import BudgetRing from "@/components/BudgetRing";
 import SpendInputModal from "@/components/SpendInputModal";
 import TransactionCard from "@/components/TransactionCard";
 import BottomNavLink from "@/components/BottomNavLink";
+import QuickPaySection from "@/components/QuickPaySection";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -243,6 +244,9 @@ const Index = () => {
             </div>
           </div>
         )}
+
+        {/* Quick Pay Section */}
+        <QuickPaySection />
 
         {/* Stats Card */}
         <div className="glass-card p-4 rounded-2xl">
