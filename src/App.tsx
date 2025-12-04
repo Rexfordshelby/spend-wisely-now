@@ -20,6 +20,8 @@ import SendMoney from "./pages/SendMoney";
 import ReceiveMoney from "./pages/ReceiveMoney";
 import ScanPay from "./pages/ScanPay";
 import Transfers from "./pages/Transfers";
+import PaymentHistory from "./pages/PaymentHistory";
+import Contacts from "./pages/Contacts";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/receive" element={<ReceiveMoney />} />
           <Route path="/scan-pay" element={<ScanPay />} />
           <Route path="/transfers" element={<Transfers />} />
+          <Route path="/payment-history" element={<PaymentHistory />} />
+          <Route path="/contacts" element={<Contacts />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

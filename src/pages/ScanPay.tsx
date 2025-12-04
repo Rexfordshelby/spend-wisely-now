@@ -1,16 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { QrCode, X, Keyboard, Store, User, Building2 } from "lucide-react";
+import { QrCode, X, Keyboard, Store, User, Building2, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import QRScanner from "@/components/QRScanner";
 import DemoQRCodes from "@/components/DemoQRCodes";
 import PaymentProcessing from "@/components/PaymentProcessing";
+import QRImageUpload from "@/components/QRImageUpload";
 
 interface PaymentInfo {
   type: string;
@@ -280,6 +281,7 @@ const parseAnyQRCode = (qrData: string): PaymentInfo | null => {
 
 const ScanPay = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [scanning, setScanning] = useState(false);
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
   const [amount, setAmount] = useState("");
@@ -290,7 +292,17 @@ const ScanPay = () => {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+    // Check for prefilled contact from navigation
+    const state = location.state as any;
+    if (state?.prefillContact) {
+      setPaymentInfo({
+        type: 'contact',
+        recipientId: state.prefillContact.recipientId || '',
+        recipientName: state.prefillContact.recipientName || 'Contact',
+        currency: state.prefillContact.currency || 'INR',
+      });
+    }
+  }, [location]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -477,17 +489,21 @@ const ScanPay = () => {
 
         {!paymentInfo ? (
           <Tabs defaultValue="scan" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="scan" className="flex items-center gap-2">
-                <QrCode className="w-4 h-4" />
+            <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsTrigger value="scan" className="flex items-center gap-1 text-xs">
+                <QrCode className="w-3 h-3" />
                 Scan
               </TabsTrigger>
-              <TabsTrigger value="upi" className="flex items-center gap-2">
-                <Keyboard className="w-4 h-4" />
+              <TabsTrigger value="upload" className="flex items-center gap-1 text-xs">
+                <ImagePlus className="w-3 h-3" />
+                Upload
+              </TabsTrigger>
+              <TabsTrigger value="upi" className="flex items-center gap-1 text-xs">
+                <Keyboard className="w-3 h-3" />
                 UPI ID
               </TabsTrigger>
-              <TabsTrigger value="demo" className="flex items-center gap-2">
-                <Store className="w-4 h-4" />
+              <TabsTrigger value="demo" className="flex items-center gap-1 text-xs">
+                <Store className="w-3 h-3" />
                 Demo
               </TabsTrigger>
             </TabsList>
@@ -517,6 +533,10 @@ const ScanPay = () => {
                   Demo mode: Payments are simulated, no real money is transferred
                 </p>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="upload">
+              <QRImageUpload onScan={handleScan} />
             </TabsContent>
 
             <TabsContent value="upi">
