@@ -8,6 +8,9 @@ import SpendInputModal from "@/components/SpendInputModal";
 import TransactionCard from "@/components/TransactionCard";
 import BottomNavLink from "@/components/BottomNavLink";
 import QuickPaySection from "@/components/QuickPaySection";
+import QuickContacts from "@/components/QuickContacts";
+import RewardsCard from "@/components/RewardsCard";
+import SplitBillCard from "@/components/SplitBillCard";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -245,8 +248,17 @@ const Index = () => {
           </div>
         )}
 
+        {/* Quick Contacts */}
+        <QuickContacts />
+
         {/* Quick Pay Section */}
         <QuickPaySection />
+
+        {/* Split Bill */}
+        <SplitBillCard />
+
+        {/* Rewards Card */}
+        <RewardsCard />
 
         {/* Stats Card */}
         <div className="glass-card p-4 rounded-2xl">

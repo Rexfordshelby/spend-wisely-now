@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
-import { QrCode, Send, Wallet, ArrowDownLeft, Globe, CreditCard } from "lucide-react";
+import { QrCode, Send, Wallet, ArrowDownLeft, Globe, CreditCard, History, Users } from "lucide-react";
 
 const QuickPaySection = () => {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ const QuickPaySection = () => {
     { icon: ArrowDownLeft, label: 'Receive', route: '/receive', color: 'bg-green-500/10 text-green-500' },
     { icon: Globe, label: 'Transfer', route: '/transfers', color: 'bg-blue-500/10 text-blue-500' },
     { icon: Wallet, label: 'Wallets', route: '/wallets', color: 'bg-amber-500/10 text-amber-500' },
-    { icon: CreditCard, label: 'Cards', route: '/settings', color: 'bg-rose-500/10 text-rose-500' },
+    { icon: History, label: 'History', route: '/payment-history', color: 'bg-rose-500/10 text-rose-500' },
   ];
 
   return (
