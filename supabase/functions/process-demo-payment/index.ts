@@ -6,18 +6,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Demo merchant database
-const DEMO_MERCHANTS = {
-  'demo@worldvault': { name: 'World Vault Demo', type: 'wallet' },
-  'coffee@worldvault': { name: 'Starbucks Coffee', type: 'merchant' },
-  'grocery@worldvault': { name: 'BigBasket Groceries', type: 'merchant' },
-  'fuel@worldvault': { name: 'HP Petrol Pump', type: 'merchant' },
-  'movie@worldvault': { name: 'PVR Cinemas', type: 'merchant' },
-  'food@worldvault': { name: 'Swiggy Food Delivery', type: 'merchant' },
-  'shopping@worldvault': { name: 'Amazon Shopping', type: 'merchant' },
-  'travel@worldvault': { name: 'MakeMyTrip', type: 'merchant' },
-  'mobile@worldvault': { name: 'Airtel Recharge', type: 'merchant' },
-  'electricity@worldvault': { name: 'BESCOM Bill Pay', type: 'merchant' },
+// Demo merchant database - Global
+const DEMO_MERCHANTS: Record<string, { name: string; type: string; country: string }> = {
+  'demo@worldvault': { name: 'World Vault Demo', type: 'wallet', country: 'Global' },
+  'coffee@worldvault': { name: 'Starbucks Coffee', type: 'merchant', country: 'IN' },
+  'coffee@paytm': { name: 'Starbucks', type: 'merchant', country: 'IN' },
+  'grocery@ybl': { name: 'BigBasket', type: 'merchant', country: 'IN' },
+  'fuel@axisbank': { name: 'HP Petrol', type: 'merchant', country: 'IN' },
+  'movie@okicici': { name: 'PVR Cinemas', type: 'merchant', country: 'IN' },
+  'food@upi': { name: 'Swiggy', type: 'merchant', country: 'IN' },
+  'travel@paytm': { name: 'MakeMyTrip', type: 'merchant', country: 'IN' },
 };
 
 // UPI Demo IDs
@@ -26,6 +24,22 @@ const UPI_DEMO_IDS: Record<string, { name: string; type: string }> = {
   'paytm@upi': { name: 'Paytm Wallet', type: 'upi' },
   'gpay@upi': { name: 'Google Pay', type: 'upi' },
   'phonepe@upi': { name: 'PhonePe', type: 'upi' },
+  'starbucks@paytm': { name: 'Starbucks', type: 'upi' },
+  'amazon@ybl': { name: 'Amazon', type: 'upi' },
+  'swiggy@axisbank': { name: 'Swiggy', type: 'upi' },
+};
+
+// International payment identifiers
+const INTL_PAYMENT_IDS: Record<string, { name: string; type: string; currency: string }> = {
+  '+923001234567': { name: 'EasyPaisa Shop', type: 'easypaisa', currency: 'PKR' },
+  '+923211234567': { name: 'JazzCash Store', type: 'jazzcash', currency: 'PKR' },
+  '+923331234567': { name: 'Foodpanda PK', type: 'easypaisa', currency: 'PKR' },
+  '+923451234567': { name: 'Daraz', type: 'jazzcash', currency: 'PKR' },
+  'alipay_merchant_001': { name: 'Alipay Shop', type: 'alipay', currency: 'CNY' },
+  'wechat_merchant_001': { name: 'WeChat Store', type: 'wechatpay', currency: 'CNY' },
+  '+254712345678': { name: 'M-Pesa Kenya', type: 'mpesa', currency: 'KES' },
+  'merchant@paypal': { name: 'PayPal Shop', type: 'paypal', currency: 'USD' },
+  'merchant@alipay': { name: 'Alipay Merchant', type: 'alipay', currency: 'CNY' },
 };
 
 serve(async (req) => {
@@ -53,22 +67,43 @@ serve(async (req) => {
       throw new Error('Invalid amount');
     }
 
-    // Check if recipient is a demo merchant or UPI
+    // Check if recipient is a demo merchant, UPI, or international
     let recipientName = 'Unknown';
-    let merchantType = 'unknown';
+    let merchantType = paymentType || 'unknown';
 
-    if (DEMO_MERCHANTS[recipientId as keyof typeof DEMO_MERCHANTS]) {
-      const merchant = DEMO_MERCHANTS[recipientId as keyof typeof DEMO_MERCHANTS];
+    if (DEMO_MERCHANTS[recipientId]) {
+      const merchant = DEMO_MERCHANTS[recipientId];
       recipientName = merchant.name;
       merchantType = merchant.type;
-    } else if (UPI_DEMO_IDS[recipientId as keyof typeof UPI_DEMO_IDS]) {
-      const upiAccount = UPI_DEMO_IDS[recipientId as keyof typeof UPI_DEMO_IDS];
+    } else if (UPI_DEMO_IDS[recipientId]) {
+      const upiAccount = UPI_DEMO_IDS[recipientId];
       recipientName = upiAccount.name;
       merchantType = upiAccount.type;
+    } else if (INTL_PAYMENT_IDS[recipientId]) {
+      const intlAccount = INTL_PAYMENT_IDS[recipientId];
+      recipientName = intlAccount.name;
+      merchantType = intlAccount.type;
     } else if (recipientId.includes('@')) {
       // Custom UPI ID
       recipientName = recipientId.split('@')[0];
       merchantType = 'upi';
+    } else if (recipientId.startsWith('+') || /^\d{10,15}$/.test(recipientId)) {
+      // Phone number - determine type by prefix
+      if (recipientId.startsWith('+92') || recipientId.startsWith('03')) {
+        recipientName = 'Pakistan Mobile';
+        merchantType = 'easypaisa';
+      } else if (recipientId.startsWith('+254') || recipientId.startsWith('07')) {
+        recipientName = 'Kenya Mobile';
+        merchantType = 'mpesa';
+      } else if (recipientId.startsWith('+86')) {
+        recipientName = 'China Mobile';
+        merchantType = 'alipay';
+      } else {
+        recipientName = `Mobile: ${recipientId}`;
+        merchantType = 'mobile_payment';
+      }
+    } else {
+      recipientName = recipientId.substring(0, 30);
     }
 
     // Get user's wallet

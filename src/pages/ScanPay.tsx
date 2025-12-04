@@ -23,147 +23,258 @@ interface PaymentInfo {
   rawData?: string;
 }
 
-// Parse any QR code format
+// Parse any QR code format - supports global payment systems
 const parseAnyQRCode = (qrData: string): PaymentInfo | null => {
   console.log("Parsing QR data:", qrData);
   
+  if (!qrData || typeof qrData !== 'string') {
+    return null;
+  }
+
+  const data = qrData.trim();
+  
   try {
     // UPI QR Code format: upi://pay?pa=xxx&pn=xxx&am=xxx&cu=xxx
-    if (qrData.toLowerCase().startsWith('upi://')) {
-      const url = new URL(qrData);
-      const params = url.searchParams;
-      
-      return {
-        type: 'upi',
-        recipientId: params.get('pa') || params.get('PA') || '',
-        recipientName: decodeURIComponent(params.get('pn') || params.get('PN') || params.get('pa')?.split('@')[0] || 'Merchant'),
-        amount: params.get('am') || params.get('AM') ? parseFloat(params.get('am') || params.get('AM') || '0') : undefined,
-        currency: params.get('cu') || params.get('CU') || 'INR',
-        merchantCode: params.get('mc') || params.get('MC') || undefined,
-        transactionNote: params.get('tn') || params.get('TN') || undefined,
-        rawData: qrData,
-      };
+    if (data.toLowerCase().startsWith('upi://')) {
+      try {
+        const url = new URL(data);
+        const params = url.searchParams;
+        
+        return {
+          type: 'upi',
+          recipientId: params.get('pa') || params.get('PA') || '',
+          recipientName: decodeURIComponent(params.get('pn') || params.get('PN') || params.get('pa')?.split('@')[0] || 'Merchant'),
+          amount: params.get('am') || params.get('AM') ? parseFloat(params.get('am') || params.get('AM') || '0') : undefined,
+          currency: params.get('cu') || params.get('CU') || 'INR',
+          merchantCode: params.get('mc') || params.get('MC') || undefined,
+          transactionNote: params.get('tn') || params.get('TN') || undefined,
+          rawData: data,
+        };
+      } catch {
+        // URL parsing failed, try regex
+      }
     }
     
     // World Vault QR format
-    if (qrData.startsWith('worldvault://')) {
-      const base64Data = qrData.replace('worldvault://', '');
-      const decoded = JSON.parse(atob(base64Data));
+    if (data.startsWith('worldvault://')) {
+      try {
+        const base64Data = data.replace('worldvault://', '');
+        const decoded = JSON.parse(atob(base64Data));
+        return {
+          type: 'worldvault',
+          recipientId: decoded.recipientId || '',
+          recipientName: decoded.recipientName || 'World Vault User',
+          amount: decoded.amount,
+          currency: decoded.currency || 'INR',
+          rawData: data,
+        };
+      } catch {
+        // Continue to other parsers
+      }
+    }
+
+    // EasyPaisa (Pakistan)
+    if (data.toLowerCase().includes('easypaisa') || data.toLowerCase().includes('easypay')) {
+      const phoneMatch = data.match(/(\+?92|0)?3\d{9}/);
       return {
-        type: 'worldvault',
-        recipientId: decoded.recipientId || '',
-        recipientName: decoded.recipientName || 'World Vault User',
-        amount: decoded.amount,
-        currency: decoded.currency || 'INR',
-        rawData: qrData,
+        type: 'easypaisa',
+        recipientId: phoneMatch ? phoneMatch[0] : 'easypaisa_merchant',
+        recipientName: 'EasyPaisa Account',
+        currency: 'PKR',
+        rawData: data,
       };
     }
 
-    // PayTM QR (often starts with paytmqr:// or contains paytm)
-    if (qrData.toLowerCase().includes('paytm')) {
-      // Try to extract UPI from PayTM QR
-      const upiMatch = qrData.match(/pa=([^&]+)/i);
+    // JazzCash (Pakistan)
+    if (data.toLowerCase().includes('jazzcash') || data.toLowerCase().includes('jazz')) {
+      const phoneMatch = data.match(/(\+?92|0)?3\d{9}/);
+      return {
+        type: 'jazzcash',
+        recipientId: phoneMatch ? phoneMatch[0] : 'jazzcash_merchant',
+        recipientName: 'JazzCash Account',
+        currency: 'PKR',
+        rawData: data,
+      };
+    }
+
+    // Alipay (China)
+    if (data.toLowerCase().includes('alipay') || data.startsWith('https://qr.alipay.com')) {
+      return {
+        type: 'alipay',
+        recipientId: data.substring(0, 50),
+        recipientName: 'Alipay Merchant',
+        currency: 'CNY',
+        rawData: data,
+      };
+    }
+
+    // WeChat Pay (China)
+    if (data.toLowerCase().includes('wechat') || data.startsWith('wxp://')) {
+      return {
+        type: 'wechatpay',
+        recipientId: data.substring(0, 50),
+        recipientName: 'WeChat Pay Merchant',
+        currency: 'CNY',
+        rawData: data,
+      };
+    }
+
+    // M-Pesa (Africa)
+    if (data.toLowerCase().includes('mpesa') || data.toLowerCase().includes('m-pesa')) {
+      const phoneMatch = data.match(/(\+?254|0)?7\d{8}/);
+      return {
+        type: 'mpesa',
+        recipientId: phoneMatch ? phoneMatch[0] : 'mpesa_merchant',
+        recipientName: 'M-Pesa Account',
+        currency: 'KES',
+        rawData: data,
+      };
+    }
+
+    // PayTM QR
+    if (data.toLowerCase().includes('paytm')) {
+      const upiMatch = data.match(/pa=([^&]+)/i);
       return {
         type: 'paytm',
-        recipientId: upiMatch ? upiMatch[1] : 'paytm_merchant',
+        recipientId: upiMatch ? decodeURIComponent(upiMatch[1]) : 'paytm_merchant',
         recipientName: 'PayTM Merchant',
         currency: 'INR',
-        rawData: qrData,
+        rawData: data,
       };
     }
 
     // PhonePe QR
-    if (qrData.toLowerCase().includes('phonepe')) {
-      const upiMatch = qrData.match(/pa=([^&]+)/i);
+    if (data.toLowerCase().includes('phonepe')) {
+      const upiMatch = data.match(/pa=([^&]+)/i);
       return {
         type: 'phonepe',
-        recipientId: upiMatch ? upiMatch[1] : 'phonepe_merchant',
+        recipientId: upiMatch ? decodeURIComponent(upiMatch[1]) : 'phonepe_merchant',
         recipientName: 'PhonePe Merchant',
         currency: 'INR',
-        rawData: qrData,
+        rawData: data,
       };
     }
 
     // Google Pay / GPay QR
-    if (qrData.toLowerCase().includes('gpay') || qrData.toLowerCase().includes('tez')) {
-      const upiMatch = qrData.match(/pa=([^&]+)/i);
+    if (data.toLowerCase().includes('gpay') || data.toLowerCase().includes('tez')) {
+      const upiMatch = data.match(/pa=([^&]+)/i);
       return {
         type: 'gpay',
-        recipientId: upiMatch ? upiMatch[1] : 'gpay_merchant',
+        recipientId: upiMatch ? decodeURIComponent(upiMatch[1]) : 'gpay_merchant',
         recipientName: 'Google Pay Merchant',
         currency: 'INR',
-        rawData: qrData,
+        rawData: data,
       };
     }
 
     // BHIM QR
-    if (qrData.toLowerCase().includes('bhim')) {
-      const upiMatch = qrData.match(/pa=([^&]+)/i);
+    if (data.toLowerCase().includes('bhim')) {
+      const upiMatch = data.match(/pa=([^&]+)/i);
       return {
         type: 'bhim',
-        recipientId: upiMatch ? upiMatch[1] : 'bhim_merchant',
+        recipientId: upiMatch ? decodeURIComponent(upiMatch[1]) : 'bhim_merchant',
         recipientName: 'BHIM Merchant',
         currency: 'INR',
-        rawData: qrData,
+        rawData: data,
       };
     }
 
-    // Generic URL with payment parameters
-    if (qrData.includes('pa=') || qrData.includes('PA=')) {
-      const upiMatch = qrData.match(/pa=([^&]+)/i);
-      const nameMatch = qrData.match(/pn=([^&]+)/i);
-      const amountMatch = qrData.match(/am=([^&]+)/i);
+    // Generic URL with payment parameters (UPI-style)
+    if (data.includes('pa=') || data.includes('PA=')) {
+      const upiMatch = data.match(/pa=([^&]+)/i);
+      const nameMatch = data.match(/pn=([^&]+)/i);
+      const amountMatch = data.match(/am=([^&]+)/i);
+      const currMatch = data.match(/cu=([^&]+)/i);
       
       return {
         type: 'generic_upi',
         recipientId: upiMatch ? decodeURIComponent(upiMatch[1]) : 'unknown',
         recipientName: nameMatch ? decodeURIComponent(nameMatch[1]) : 'Merchant',
         amount: amountMatch ? parseFloat(amountMatch[1]) : undefined,
-        currency: 'INR',
-        rawData: qrData,
+        currency: currMatch ? currMatch[1].toUpperCase() : 'INR',
+        rawData: data,
       };
     }
 
-    // Try to parse as JSON (some QR codes are just JSON)
+    // Try to parse as JSON
     try {
-      const jsonData = JSON.parse(qrData);
-      if (jsonData.upi || jsonData.pa || jsonData.vpa) {
+      const jsonData = JSON.parse(data);
+      if (jsonData.upi || jsonData.pa || jsonData.vpa || jsonData.phone || jsonData.account) {
         return {
-          type: 'json_upi',
-          recipientId: jsonData.upi || jsonData.pa || jsonData.vpa,
-          recipientName: jsonData.name || jsonData.pn || 'Merchant',
+          type: 'json_payment',
+          recipientId: jsonData.upi || jsonData.pa || jsonData.vpa || jsonData.phone || jsonData.account,
+          recipientName: jsonData.name || jsonData.pn || jsonData.merchant || 'Merchant',
           amount: jsonData.amount || jsonData.am,
-          currency: jsonData.currency || 'INR',
-          rawData: qrData,
+          currency: jsonData.currency || jsonData.cu || 'INR',
+          rawData: data,
         };
       }
-    } catch (e) {
+    } catch {
       // Not JSON, continue
     }
 
-    // If nothing else matches, treat as plain text UPI ID
-    if (qrData.includes('@')) {
+    // Plain UPI ID format (contains @)
+    if (data.includes('@') && !data.includes(' ') && data.length < 100) {
       return {
         type: 'plain_upi',
-        recipientId: qrData.trim(),
-        recipientName: qrData.split('@')[0],
+        recipientId: data,
+        recipientName: data.split('@')[0],
         currency: 'INR',
-        rawData: qrData,
+        rawData: data,
       };
+    }
+
+    // Phone number detection (various formats)
+    const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,3}[)]?[-\s\.]?[0-9]{4,10}$/;
+    if (phoneRegex.test(data.replace(/\s/g, ''))) {
+      return {
+        type: 'phone_payment',
+        recipientId: data.replace(/[\s\-\(\)]/g, ''),
+        recipientName: 'Phone Payment',
+        currency: 'INR',
+        rawData: data,
+      };
+    }
+
+    // URL-based payment links
+    if (data.startsWith('http://') || data.startsWith('https://')) {
+      try {
+        const url = new URL(data);
+        const params = url.searchParams;
+        
+        // Extract any available payment info from URL
+        return {
+          type: 'payment_link',
+          recipientId: params.get('pa') || params.get('merchant') || params.get('id') || url.hostname,
+          recipientName: params.get('pn') || params.get('name') || url.hostname.replace('www.', ''),
+          amount: params.get('am') || params.get('amount') ? parseFloat(params.get('am') || params.get('amount') || '0') : undefined,
+          currency: params.get('cu') || params.get('currency') || 'INR',
+          rawData: data,
+        };
+      } catch {
+        // Invalid URL
+      }
     }
 
     // Unknown format - still allow payment
     return {
       type: 'unknown',
-      recipientId: qrData.substring(0, 50),
-      recipientName: 'Unknown Merchant',
+      recipientId: data.substring(0, 50),
+      recipientName: 'Payment Recipient',
       currency: 'INR',
-      rawData: qrData,
+      rawData: data,
     };
 
   } catch (error) {
     console.error('Error parsing QR code:', error);
-    return null;
+    // Return a fallback instead of null
+    return {
+      type: 'unknown',
+      recipientId: data.substring(0, 50),
+      recipientName: 'Unknown Merchant',
+      currency: 'INR',
+      rawData: data,
+    };
   }
 };
 
@@ -223,17 +334,59 @@ const ScanPay = () => {
   };
 
   const handleUpiIdSubmit = () => {
-    if (!upiId.includes('@')) {
-      toast.error("Please enter a valid UPI ID (e.g., name@upi)");
+    const input = upiId.trim();
+    
+    // Check for phone number (EasyPaisa, JazzCash, M-Pesa style)
+    const phoneRegex = /^[\+]?[0-9]{10,15}$/;
+    if (phoneRegex.test(input.replace(/[\s\-]/g, ''))) {
+      const cleanPhone = input.replace(/[\s\-]/g, '');
+      let currency = 'INR';
+      let type = 'phone_payment';
+      
+      // Detect country from phone prefix
+      if (cleanPhone.startsWith('+92') || cleanPhone.startsWith('92') || cleanPhone.startsWith('03')) {
+        currency = 'PKR';
+        type = 'easypaisa';
+      } else if (cleanPhone.startsWith('+254') || cleanPhone.startsWith('254') || cleanPhone.startsWith('07')) {
+        currency = 'KES';
+        type = 'mpesa';
+      } else if (cleanPhone.startsWith('+86') || cleanPhone.startsWith('86')) {
+        currency = 'CNY';
+        type = 'alipay';
+      }
+      
+      setPaymentInfo({
+        type,
+        recipientId: cleanPhone,
+        recipientName: `Mobile: ${cleanPhone}`,
+        currency,
+      });
       return;
     }
     
-    setPaymentInfo({
-      type: 'manual_upi',
-      recipientId: upiId,
-      recipientName: upiId.split('@')[0],
-      currency: 'INR',
-    });
+    // Check for UPI ID
+    if (input.includes('@')) {
+      setPaymentInfo({
+        type: 'manual_upi',
+        recipientId: input,
+        recipientName: input.split('@')[0],
+        currency: 'INR',
+      });
+      return;
+    }
+    
+    // Allow any other input as generic payment
+    if (input.length > 3) {
+      setPaymentInfo({
+        type: 'manual_payment',
+        recipientId: input,
+        recipientName: input,
+        currency: 'INR',
+      });
+      return;
+    }
+    
+    toast.error("Please enter a valid UPI ID, phone number, or merchant ID");
   };
 
   const handlePay = async () => {
@@ -369,26 +522,31 @@ const ScanPay = () => {
             <TabsContent value="upi">
               <Card className="p-6 space-y-6">
                 <div className="text-center">
-                  <h2 className="text-xl font-bold mb-2">Enter UPI ID</h2>
+                  <h2 className="text-xl font-bold mb-2">Enter Payment ID</h2>
                   <p className="text-muted-foreground text-sm">
-                    Pay directly using any UPI ID
+                    Pay using UPI ID, phone number, or merchant ID
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>UPI ID</Label>
+                    <Label>UPI ID / Phone / Merchant ID</Label>
                     <Input
-                      placeholder="name@upi, name@paytm, name@ybl"
+                      placeholder="name@upi, +923001234567, merchant_id"
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
                     />
                   </div>
 
                   <div className="text-xs text-muted-foreground">
-                    <p className="font-medium mb-2">Try these demo UPI IDs:</p>
+                    <p className="font-medium mb-2">Try these demo IDs:</p>
                     <div className="flex flex-wrap gap-2">
-                      {['demo@upi', 'starbucks@paytm', 'amazon@ybl', 'swiggy@axisbank'].map((id) => (
+                      {[
+                        'demo@upi', 
+                        'starbucks@paytm', 
+                        '+923001234567', 
+                        'merchant@alipay'
+                      ].map((id) => (
                         <button
                           key={id}
                           className="px-2 py-1 rounded bg-accent/10 hover:bg-accent/20 transition-colors"
@@ -398,6 +556,9 @@ const ScanPay = () => {
                         </button>
                       ))}
                     </div>
+                    <p className="mt-2 text-xs opacity-70">
+                      Supports: UPI, EasyPaisa, JazzCash, Alipay & more
+                    </p>
                   </div>
 
                   <Button
