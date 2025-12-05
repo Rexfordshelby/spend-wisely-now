@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, TrendingUp, PieChart as PieChartIcon, Home, BarChart3, Users, MessageSquare, Trophy } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, TrendingUp, PieChart as PieChartIcon, Home, BarChart3, Users, MessageSquare, Trophy, Wallet } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from "recharts";
 import BottomNavLink from "@/components/BottomNavLink";
+import ExpenseAnalytics from "@/components/ExpenseAnalytics";
 
 export default function Analytics() {
   const navigate = useNavigate();
@@ -116,6 +118,25 @@ export default function Analytics() {
           </div>
         </div>
 
+        {/* Tabs for different analytics views */}
+        <Tabs defaultValue="expenses" className="mb-6">
+          <TabsList className="w-full">
+            <TabsTrigger value="expenses" className="flex-1">
+              <Wallet className="w-4 h-4 mr-2" />
+              Expenses
+            </TabsTrigger>
+            <TabsTrigger value="detailed" className="flex-1">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Detailed
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="expenses" className="mt-4">
+            <ExpenseAnalytics />
+          </TabsContent>
+          
+          <TabsContent value="detailed" className="mt-4">
+
         {/* Category Breakdown */}
         <Card className="mb-6 bg-card/80 backdrop-blur border-border/50">
           <CardHeader>
@@ -220,6 +241,8 @@ export default function Analytics() {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Bottom Navigation */}

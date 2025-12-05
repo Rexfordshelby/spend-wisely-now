@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "./ui/button";
-import { Download, Share2, Copy, Check } from "lucide-react";
+import { Download, Share2, Copy, Check, Smartphone } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QRGeneratorProps {
   username: string;
@@ -12,28 +13,59 @@ interface QRGeneratorProps {
 
 const QRGenerator = ({ username, amount, currency }: QRGeneratorProps) => {
   const [copied, setCopied] = useState(false);
+  const [demoReceived, setDemoReceived] = useState(false);
   
-  // Generate QR data client-side (no edge function needed)
+  // Generate QR data that can be scanned by anyone
   const generateQRData = () => {
     const upiId = `${username}@worldvault`;
     
+    // Create a universal format that works with our scanner
+    const paymentData = {
+      type: 'worldvault',
+      recipientId: upiId,
+      recipientName: username,
+      amount: amount || null,
+      currency,
+      timestamp: Date.now()
+    };
+    
     if (currency === 'INR') {
-      // UPI format for INR
-      return `upi://pay?pa=${upiId}&pn=${username}&cu=INR${amount ? `&am=${amount}` : ''}`;
+      // UPI-compatible format for INR
+      return `upi://pay?pa=${upiId}&pn=${encodeURIComponent(username)}&cu=INR${amount ? `&am=${amount}` : ''}&tn=WorldVault`;
     } else {
-      // World Vault custom format for other currencies
-      const data = btoa(JSON.stringify({
-        recipientId: upiId,
-        recipientName: username,
-        amount,
-        currency,
-      }));
-      return `worldvault://${data}`;
+      // World Vault universal format
+      return `worldvault://pay?data=${btoa(JSON.stringify(paymentData))}`;
     }
   };
 
   const qrData = generateQRData();
   const upiId = `${username}@worldvault`;
+  
+  // Demo: Simulate receiving payment when someone scans
+  const simulateReceive = async () => {
+    setDemoReceived(true);
+    toast.success(`Demo: Received ${currency === 'INR' ? '₹' : currency + ' '}${amount || 'any amount'} from a sender!`);
+    
+    // Add to wallet balance (demo)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user && amount) {
+      const { data: wallet } = await supabase
+        .from('multi_currency_wallets')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('currency', currency)
+        .maybeSingle();
+      
+      if (wallet) {
+        await supabase
+          .from('multi_currency_wallets')
+          .update({ balance: wallet.balance + amount })
+          .eq('id', wallet.id);
+      }
+    }
+    
+    setTimeout(() => setDemoReceived(false), 3000);
+  };
 
   const handleDownload = () => {
     const svg = document.getElementById('qr-code');
@@ -109,7 +141,7 @@ const QRGenerator = ({ username, amount, currency }: QRGeneratorProps) => {
         )}
       </div>
 
-      <div className="flex gap-2 justify-center">
+      <div className="flex gap-2 justify-center flex-wrap">
         <Button variant="outline" onClick={handleDownload}>
           <Download className="w-4 h-4 mr-2" />
           Download
@@ -118,6 +150,22 @@ const QRGenerator = ({ username, amount, currency }: QRGeneratorProps) => {
           <Share2 className="w-4 h-4 mr-2" />
           Share
         </Button>
+      </div>
+
+      {/* Demo Receive Button */}
+      <div className="pt-4 border-t border-border/50">
+        <Button 
+          className="w-full" 
+          variant={demoReceived ? "secondary" : "default"}
+          onClick={simulateReceive}
+          disabled={demoReceived}
+        >
+          <Smartphone className="w-4 h-4 mr-2" />
+          {demoReceived ? 'Payment Received!' : 'Simulate Receive (Demo)'}
+        </Button>
+        <p className="text-xs text-muted-foreground text-center mt-2">
+          Tap to simulate someone scanning this QR code
+        </p>
       </div>
     </div>
   );
