@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings, TrendingUp, Wallet, Target, ArrowRight, Home, BarChart3, Users, MessageSquare, Trophy } from "lucide-react";
+import { Plus, Settings, TrendingUp, Wallet, Target, ArrowRight, Home, BarChart3, Users, MessageSquare, Trophy, Bitcoin, Calendar } from "lucide-react";
 import BudgetRing from "@/components/BudgetRing";
 import SpendInputModal from "@/components/SpendInputModal";
 import TransactionCard from "@/components/TransactionCard";
@@ -11,6 +11,7 @@ import QuickPaySection from "@/components/QuickPaySection";
 import QuickContacts from "@/components/QuickContacts";
 import RewardsCard from "@/components/RewardsCard";
 import SplitBillCard from "@/components/SplitBillCard";
+import NotificationBell from "@/components/NotificationBell";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -183,13 +184,16 @@ const Index = () => {
           </h1>
           <p className="text-sm text-muted-foreground">Smart spending advisor</p>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/settings')}
-        >
-          <Settings className="w-5 h-5" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/settings')}
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -253,6 +257,26 @@ const Index = () => {
 
         {/* Quick Pay Section */}
         <QuickPaySection />
+
+        {/* Quick Actions - Crypto & Scheduled */}
+        <div className="grid grid-cols-2 gap-3">
+          <Button 
+            variant="outline" 
+            className="h-16 flex flex-col items-center justify-center gap-1"
+            onClick={() => navigate('/crypto')}
+          >
+            <Bitcoin className="w-5 h-5 text-orange-500" />
+            <span className="text-xs">Crypto Wallet</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            className="h-16 flex flex-col items-center justify-center gap-1"
+            onClick={() => navigate('/scheduled-payments')}
+          >
+            <Calendar className="w-5 h-5 text-primary" />
+            <span className="text-xs">Scheduled</span>
+          </Button>
+        </div>
 
         {/* Split Bill */}
         <SplitBillCard />
