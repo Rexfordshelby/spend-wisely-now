@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "./ui/button";
-import { Download, Share2, Copy, Check, Smartphone } from "lucide-react";
+import { Download, Share2, Copy, Check, Smartphone, Link, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,32 +13,28 @@ interface QRGeneratorProps {
 
 const QRGenerator = ({ username, amount, currency }: QRGeneratorProps) => {
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [demoReceived, setDemoReceived] = useState(false);
   
-  // Generate QR data that can be scanned by anyone
+  // Generate payment URL that anyone can access
+  const generatePaymentUrl = () => {
+    const baseUrl = window.location.origin;
+    const params = new URLSearchParams();
+    if (amount) params.set('amount', amount.toString());
+    params.set('currency', currency);
+    params.set('name', username);
+    
+    return `${baseUrl}/pay/${encodeURIComponent(username)}?${params.toString()}`;
+  };
+
+  // Generate QR data - now uses web URL for universal access
   const generateQRData = () => {
-    const upiId = `${username}@worldvault`;
-    
-    // Create a universal format that works with our scanner
-    const paymentData = {
-      type: 'worldvault',
-      recipientId: upiId,
-      recipientName: username,
-      amount: amount || null,
-      currency,
-      timestamp: Date.now()
-    };
-    
-    if (currency === 'INR') {
-      // UPI-compatible format for INR
-      return `upi://pay?pa=${upiId}&pn=${encodeURIComponent(username)}&cu=INR${amount ? `&am=${amount}` : ''}&tn=WorldVault`;
-    } else {
-      // World Vault universal format
-      return `worldvault://pay?data=${btoa(JSON.stringify(paymentData))}`;
-    }
+    // Always use the web URL so anyone can scan and pay
+    return generatePaymentUrl();
   };
 
   const qrData = generateQRData();
+  const paymentUrl = generatePaymentUrl();
   const upiId = `${username}@worldvault`;
   
   // Demo: Simulate receiving payment when someone scans
@@ -114,6 +110,17 @@ const QRGenerator = ({ username, amount, currency }: QRGeneratorProps) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(paymentUrl);
+    setLinkCopied(true);
+    toast.success("Payment link copied!");
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  const handleOpenLink = () => {
+    window.open(paymentUrl, '_blank');
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-white p-8 rounded-2xl mx-auto w-fit shadow-lg">
@@ -139,6 +146,22 @@ const QRGenerator = ({ username, amount, currency }: QRGeneratorProps) => {
             {currency === 'INR' ? '₹' : currency} {amount.toLocaleString()}
           </p>
         )}
+      </div>
+
+      {/* Payment Link Section */}
+      <div className="p-3 bg-muted/50 rounded-xl space-y-2">
+        <p className="text-xs text-muted-foreground text-center">
+          Share this link with anyone to receive payment:
+        </p>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="flex-1" onClick={handleCopyLink}>
+            {linkCopied ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Link className="w-4 h-4 mr-2" />}
+            Copy Link
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleOpenLink}>
+            <ExternalLink className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       <div className="flex gap-2 justify-center flex-wrap">

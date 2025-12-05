@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings, TrendingUp, Wallet, Target, ArrowRight, Home, BarChart3, Users, MessageSquare, Trophy, Bitcoin, Calendar } from "lucide-react";
+import { Plus, Settings, TrendingUp, Wallet, Target, ArrowRight, Home, BarChart3, Users, MessageSquare, Trophy, Bitcoin, Calendar, History, QrCode } from "lucide-react";
 import BudgetRing from "@/components/BudgetRing";
 import SpendInputModal from "@/components/SpendInputModal";
 import TransactionCard from "@/components/TransactionCard";
@@ -259,22 +259,38 @@ const Index = () => {
         <QuickPaySection />
 
         {/* Quick Actions - Crypto & Scheduled */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-4 gap-2">
           <Button 
             variant="outline" 
-            className="h-16 flex flex-col items-center justify-center gap-1"
+            className="h-16 flex flex-col items-center justify-center gap-1 p-2"
             onClick={() => navigate('/crypto')}
           >
             <Bitcoin className="w-5 h-5 text-orange-500" />
-            <span className="text-xs">Crypto Wallet</span>
+            <span className="text-[10px]">Crypto</span>
           </Button>
           <Button 
             variant="outline" 
-            className="h-16 flex flex-col items-center justify-center gap-1"
+            className="h-16 flex flex-col items-center justify-center gap-1 p-2"
             onClick={() => navigate('/scheduled-payments')}
           >
             <Calendar className="w-5 h-5 text-primary" />
-            <span className="text-xs">Scheduled</span>
+            <span className="text-[10px]">Schedule</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            className="h-16 flex flex-col items-center justify-center gap-1 p-2"
+            onClick={() => navigate('/payment-history')}
+          >
+            <History className="w-5 h-5 text-secondary" />
+            <span className="text-[10px]">History</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            className="h-16 flex flex-col items-center justify-center gap-1 p-2"
+            onClick={() => navigate('/receive')}
+          >
+            <QrCode className="w-5 h-5 text-accent" />
+            <span className="text-[10px]">Receive</span>
           </Button>
         </div>
 
@@ -283,8 +299,6 @@ const Index = () => {
 
         {/* Rewards Card */}
         <RewardsCard />
-
-        {/* Stats Card */}
         <div className="glass-card p-4 rounded-2xl">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">

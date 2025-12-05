@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import PublicPay from "./pages/PublicPay";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
@@ -35,6 +36,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Public payment page - accessible without auth */}
+          <Route path="/pay/:username" element={<PublicPay />} />
+          
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
@@ -50,13 +54,13 @@ const App = () => (
           <Route path="/send" element={<SendMoney />} />
           <Route path="/receive" element={<ReceiveMoney />} />
           <Route path="/scan-pay" element={<ScanPay />} />
-        <Route path="/transfers" element={<Transfers />} />
-        <Route path="/payment-history" element={<PaymentHistory />} />
-        <Route path="/contacts" element={<Contacts />} />
-        <Route path="/scheduled-payments" element={<ScheduledPayments />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/crypto" element={<CryptoWallet />} />
-        <Route path="*" element={<NotFound />} />
+          <Route path="/transfers" element={<Transfers />} />
+          <Route path="/payment-history" element={<PaymentHistory />} />
+          <Route path="/contacts" element={<Contacts />} />
+          <Route path="/scheduled-payments" element={<ScheduledPayments />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/crypto" element={<CryptoWallet />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
